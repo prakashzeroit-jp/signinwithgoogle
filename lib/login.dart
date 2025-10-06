@@ -11,7 +11,12 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
+      body: Column(
+        children: [
+          Text('Signin with google')
+
+        ],
+      ),
     );
   }
 }
