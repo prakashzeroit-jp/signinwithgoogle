@@ -1,54 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:signin_with_google/signup.dart';
+import 'package:signin_with_google/home_page.dart';
 
-class Login extends StatefulWidget {
-  const Login({super.key});
+class Signup extends StatefulWidget {
+  const Signup({super.key});
 
   @override
-  State<Login> createState() => _LoginState();
+  State<Signup> createState() => _SigninState();
 }
 
-class _LoginState extends State<Login> {
+class _SigninState extends State<Signup> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  String? get errorMessage => null;
-
-  Future<void> _loginUser() async {
+  Future<void> signUpWithEmailAndPassword({
+    required String email,
+    required String password,
+  }) async {
     try {
-      await _auth.signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
+      await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
       );
-      // Login successful, show success SnackBar
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Login Successful! Welcome back.')),
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
       );
-      // Navigate to home screen or perform other actions
-    } on FirebaseAuthException catch (e) {
-      // Handle Firebase specific errors
-      String message;
-      if (e.code == 'user-not-found') {
-        message = 'No user found for that email.';
-      } else if (e.code == 'wrong-password') {
-        message = 'Wrong password provided for that user.';
-      } else {
-        message = e.message ?? 'An unknown error occurred.';
-      }
+      // Show success snackbar on successful sign-up
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Login Failed: $message'),
-          backgroundColor: Colors.red,
+        const SnackBar(
+          content: Text('Account created successfully!'),
+          backgroundColor: Colors.green,
         ),
       );
-    } catch (e) {
-      // Handle other potential errors
+    } on FirebaseAuthException catch (e) {
+      // Show error snackbar on failure
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('An error occurred: $e'),
+          content: Text(e.message ?? 'An unknown error occurred.'),
           backgroundColor: Colors.red,
         ),
       );
@@ -59,10 +51,10 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 216, 46, 34),
         centerTitle: true,
-        backgroundColor: const Color.fromARGB(255, 200, 32, 20),
         title: Text(
-          'Login Page',
+          'Signup Page',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
       ),
@@ -113,15 +105,20 @@ class _LoginState extends State<Login> {
               ),
             ),
             ElevatedButton(
-              onPressed: _loginUser,
+              onPressed: () {
+                signUpWithEmailAndPassword(
+                  email: _emailController.text,
+                  password: _passwordController.text,
+                );
+              },
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadiusGeometry.circular(20),
                 ),
-                fixedSize:const Size(200, 42)
+                fixedSize: const Size(200, 42),
               ),
               child: Text(
-                'Login',
+                'Signup',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Colors.red,
@@ -129,15 +126,6 @@ class _LoginState extends State<Login> {
               ),
             ),
             SizedBox(height: 20),
-            TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Signup()),
-                );
-              },
-              child: Text('Sign up',style: TextStyle(color: Colors.green,fontWeight: FontWeight.bold),),
-            ),
           ],
         ),
       ),
