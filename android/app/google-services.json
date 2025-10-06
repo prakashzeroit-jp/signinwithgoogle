@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1068080461859",
+    "project_id": "signinwith-cd676",
+    "storage_bucket": "signinwith-cd676.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1068080461859:android:3f9c358d68d89bd81cd996",
+        "android_client_info": {
+          "package_name": "com.example.signin_with_google"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdu4C1w8hbOCs8D0gcD0Cwm4PJezIwLDU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
