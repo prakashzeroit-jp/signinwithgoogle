@@ -12,23 +12,45 @@ class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
+   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Future<void> signInWithEmailPassword() async {
+  String? get errorMessage => null;
+
+  Future<void> _loginUser() async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: '', password: '');
-      // User logged in successfully
-      print('User logged in: ${userCredential.user?.email}');
+      await _auth.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+      // Login successful, show success SnackBar
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Login Successful! Welcome back.')),
+      );
+      // Navigate to home screen or perform other actions
     } on FirebaseAuthException catch (e) {
+      // Handle Firebase specific errors
+      String message;
       if (e.code == 'user-not-found') {
-        print('No user found for that email.');
+        message = 'No user found for that email.';
       } else if (e.code == 'wrong-password') {
-        print('Wrong password provided for that user.');
+        message = 'Wrong password provided for that user.';
       } else {
-        print('Error logging in: ${e.message}');
+        message = e.message ?? 'An unknown error occurred.';
       }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Login Failed: $message'),
+          backgroundColor: Colors.red,
+        ),
+      );
     } catch (e) {
-      print(e);
+      // Handle other potential errors
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('An error occurred: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -90,9 +112,7 @@ class _LoginState extends State<Login> {
               ),
             ),
             ElevatedButton(
-              onPressed: () {
-                signInWithEmailPassword();
-              },
+              onPressed: _loginUser,
               child: Text(
                 'Login',
                 style: TextStyle(fontWeight: FontWeight.bold),
